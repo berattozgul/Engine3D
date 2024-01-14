@@ -1,6 +1,9 @@
+//TestGame.Java
 package Launcher;
 
+import Core.Entities.Model;
 import Core.ILogic;
+import Core.ObjectLoader;
 import Core.RenderManager;
 import Core.WindowManager;
 import org.lwjgl.glfw.GLFW;
@@ -11,15 +14,31 @@ public class TestGame implements ILogic {
     private float color = 0.0f;
     private final RenderManager renderManager;
     private final WindowManager windowManager;
+    private final ObjectLoader loader;
+    private Model model;
 
     public TestGame() {
         renderManager = new RenderManager();
         windowManager = Main.getWindow();
+        loader=new ObjectLoader();
     }
 
     @java.lang.Override
     public void init() throws Exception {
         renderManager.init();
+        float[] vertices = {
+                -0.5f, 0.5f, 0f,
+                -0.5f, -0.5f, 0f,
+                0.5f, -0.5f, 0f,
+                0.5f, -0.5f, 0f,
+                0.5f, 0.5f, 0f,
+                -0.5f, 0.5f, 0f
+        };
+        int[] indices={
+            0,1,3,
+            3,1,2
+        };
+        model=loader.loadModel(vertices,indices);
     }
 
     @java.lang.Override
@@ -50,11 +69,12 @@ public class TestGame implements ILogic {
             windowManager.setResize(true);
         }
         windowManager.setClearColor(color,color,color,0.0f);
-        renderManager.clear();
+        renderManager.render(model);
     }
 
     @java.lang.Override
     public void cleanUp() {
         renderManager.cleanUp();
+        loader.cleanUp();
     }
 }
