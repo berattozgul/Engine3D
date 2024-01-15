@@ -1,34 +1,46 @@
 //Model.java
 package Core.Entities;
 
+import Core.Materials.Material;
+
 public class Model {
     private int id;
     private int vertexCount;
-    private Texture texture;
+    private Material material;
 
     public Model(int id, int vertexCount){
         this.id = id;
         this.vertexCount = vertexCount;
+        this.material=new Material();
     }
 
-    public Model(int id, int vertexCount, Texture texture){
+    public Model(int id, int vertexCount, Material material){
         this.id = id;
         this.vertexCount = vertexCount;
-        this.texture = texture;
+        this.material=material;
     }
 
     public Model(Model model, Texture texture){
         this.id = model.getId();
         this.vertexCount = model.getVertexCount();
-        this.texture = texture;
+        this.material = model.getMaterial();
+        this.material.setTexture(texture);
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Material material) {
+        this.material = material;
     }
 
     public Texture getTexture() {
-        return texture;
+        return material.getTexture();
     }
 
     public void setTexture(Texture texture) {
-        this.texture = texture;
+        material.setTexture(texture);
     }
 
     public int getId() {
@@ -37,5 +49,9 @@ public class Model {
 
     public int getVertexCount() {
         return vertexCount;
+    }
+    public void setTexture(Texture texture,float reflectance){
+        this.material.setTexture(texture);
+        this.material.setReflectance(reflectance);
     }
 }

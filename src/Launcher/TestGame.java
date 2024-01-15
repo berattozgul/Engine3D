@@ -22,7 +22,6 @@ public class TestGame implements ILogic {
     private final WindowManager window;
 
     private Entity entity;
-    private Entity entityBunny;
     private Camera camera;
 
     Vector3f cameraInc;
@@ -41,8 +40,8 @@ public class TestGame implements ILogic {
         //  Cube
 
         Model model=loader.loadOBJModel("/models/bunny.obj");
-        model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")));
-        entity = new Entity(model, new Vector3f(0,0,-5), new Vector3f(0,0,0), 1);
+        model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")),1f);
+        entity = new Entity(model, new Vector3f(0,0,-1), new Vector3f(0,0,0), 1);
     }
 
     @Override
@@ -87,7 +86,6 @@ public class TestGame implements ILogic {
             window.setResize(true);
         }
 
-        window.setClearColour(0.0f, 0.0f, 0.0f, 0.0f);
         renderer.clear();
 //        renderer.render(shaftModel);
         renderer.render(entity, camera);

@@ -16,7 +16,7 @@ public class Main {
         try{
             engine.start();
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
     public static WindowManager getWindow() {
