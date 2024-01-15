@@ -1,8 +1,8 @@
 package Launcher;
 
-import Core.EngineManager;
+import Core.Managers.EngineManager;
 import Core.Utils.Constants;
-import Core.WindowManager;
+import Core.Managers.WindowManager;
 import org.lwjgl.*;
 
 public class Main {

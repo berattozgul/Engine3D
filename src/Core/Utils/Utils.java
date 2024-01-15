@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.nio.IntBuffer;
@@ -28,10 +29,17 @@ public class Utils {
         return buffer;
     }
 
-    public static String loadResurce(String filename) throws Exception {
+    public static float[] concatWithArrayCopy(float[] vertices, float[] vertices1) {
+        float[] result = Arrays.copyOf(vertices, vertices.length + vertices1.length);
+        System.arraycopy(vertices1, 0, result, vertices.length, vertices1.length);
+        return result;
+    }
+
+    public static String loadResource(String filename) throws Exception {
         String result;
-        try (InputStream in = Utils.class.getResourceAsStream(filename);
-             Scanner scanner = new Scanner(in, StandardCharsets.UTF_8.name())) {
+        try (
+                InputStream in = Utils.class.getResourceAsStream(filename);
+                Scanner scanner = new Scanner(in, StandardCharsets.UTF_8.name())) {
             result = scanner.useDelimiter("\\A").next();
         }
         return result;
@@ -39,12 +47,14 @@ public class Utils {
 
     public static List<String> readAllLines(String filename) {
         List<String> list = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Class.forName(Utils.class.getName()).getResourceAsStream(filename)))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Class.forName(Utils.class.getName())
+                .getResourceAsStream(filename)))) {
             String line;
             while ((line = br.readLine()) != null) {
                 list.add(line);
             }
-        }catch(IOException |ClassNotFoundException e){
+
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return list;
