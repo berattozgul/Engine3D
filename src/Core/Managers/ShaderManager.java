@@ -1,5 +1,8 @@
 package Core.Managers;
 
+import Core.Lightning.DirectionalLight;
+import Core.Lightning.PointLight;
+import Core.Lightning.SpotLight;
 import Core.Materials.Material;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -57,14 +60,41 @@ public class ShaderManager {
             GL20.glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
         }
     }
+    public void createDirectionalLightUniform(String uniformName)throws Exception{
+        createUniform(uniformName+".color");;
+        createUniform(uniformName+".direction");;
+        createUniform(uniformName+".intensity");;
 
+    }
     public void setUniform(String uniformName, Material material) {
         setUniform(uniformName + ".ambient", material.getAmbientColor());
         setUniform(uniformName + ".diffuse", material.getDiffuseColor());
         setUniform(uniformName + ".specular", material.getSpecularColor());
         setUniform(uniformName + ".hasTexture", material.hasTexture() ? 1 : 0);
         setUniform(uniformName + ".reflectance", material.getReflectance());
-
+    }
+    public void creatPointLightUniform(String uniformName)throws Exception{
+        createUniform(uniformName+".color");
+        createUniform(uniformName+".position");
+        createUniform(uniformName+".intensity");
+        createUniform(uniformName+".constant");
+        createUniform(uniformName+".linear");
+        createUniform(uniformName+".exponent");
+    }
+    public void createSpotLightUniform(String uniformName)throws Exception{
+        creatPointLightUniform(uniformName+".pl");
+        createUniform(uniformName+".coneDir");
+        createUniform(uniformName+".cutOff");
+    }
+    public void createPointLightListUniform(String uniformName,int size)throws Exception{
+        for(int i=0;i<size;i++){
+            creatPointLightUniform(uniformName+"["+i+"]");
+        }
+    }
+    public void createSpotLightListUniform(String uniformName,int size)throws Exception{
+        for(int i=0;i<size;i++){
+            createSpotLightUniform(uniformName+"["+i+"]");
+        }
     }
 
     public void setUniform(String uniformName, boolean value) {
@@ -82,8 +112,47 @@ public class ShaderManager {
         GL20.glUniform1f(uniforms.get(uniformName), value);
     }
 
+    public void setUniform(String uniformName, SpotLight spotLight){
+        setUniform(uniformName+".pl",spotLight.getPointLight());
+        setUniform(uniformName+".coneDir",spotLight.getConeDirection());
+        setUniform(uniformName+".cutOff",spotLight.getCutOff());
+    }
     public void createVertexShader(String shaderCode) throws Exception {
         vertexShaderID = createShader(shaderCode, GL20.GL_VERTEX_SHADER);
+    }
+    public void setUniform(String uniformName, DirectionalLight directionalLight){
+        setUniform(uniformName+".color",directionalLight.getColor());
+        setUniform(uniformName+".direction",directionalLight.getDirection());
+        setUniform(uniformName+".intensity",directionalLight.getIntensity());
+
+    }
+    public void setUniform(String uniformName, PointLight pointLight){
+            setUniform(uniformName+".color",pointLight.getColor());
+            setUniform(uniformName+".position",pointLight.getPosition());
+            setUniform(uniformName+".intensity",pointLight.getIntensity());
+            setUniform(uniformName+".constant",pointLight.getConstant());
+            setUniform(uniformName+".linear",pointLight.getLinear());
+            setUniform(uniformName+".exponent",pointLight.getExponent());
+    }
+    public void setUniform(String uniformName,PointLight[] pointLights){
+        int numLights=pointLights!=null? pointLights.length : 0;
+        for(int i =0;i<numLights;i++){
+            setUniform(uniformName,pointLights[i],i);
+        }
+    }
+    public void setUniform(String uniformName,SpotLight[] spotLights){
+        int numLights=spotLights!=null? spotLights.length : 0;
+        for(int i =0;i<numLights;i++){
+            setUniform(uniformName,spotLights[i],i);
+        }
+    }
+
+    public void setUniform(String uniformName, SpotLight spotLight, int pos) {
+        setUniform(uniformName+"["+pos+"]",spotLight);
+    }
+
+    public void setUniform(String uniformName, PointLight pointLight, int pos) {
+        setUniform(uniformName+"["+pos+"]",pointLight);
     }
 
     public void createFragmentShader(String shaderCode) throws Exception {

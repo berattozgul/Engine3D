@@ -1,13 +1,11 @@
 package Core.Managers;
 
 import org.joml.Matrix4f;
-import org.lwjgl.*;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.ovr.OVRMatrix4f;
 import org.lwjgl.system.MemoryUtil;
 
 import static Core.Utils.Constants.*;
@@ -85,7 +83,7 @@ public class WindowManager {
 
         GL.createCapabilities();
 
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GL11.glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
         GL11.glEnable(GL11.GL_CULL_FACE);
@@ -101,7 +99,7 @@ public class WindowManager {
         GLFW.glfwDestroyWindow(window);
     }
 
-    public void setClearColour(float r, float g, float b, float a) {
+    public void setClearColor(float r, float g, float b, float a) {
         GL11.glClearColor(r, g, b, a);
     }
 

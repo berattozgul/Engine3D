@@ -2,6 +2,9 @@
 package Core.Managers;
 
 import Core.Entities.Entity;
+import Core.Lightning.DirectionalLight;
+import Core.Lightning.PointLight;
+import Core.Lightning.SpotLight;
 import Core.Utils.Constants;
 import Core.Utils.Transformation;
 import Core.Utils.Utils;
@@ -30,9 +33,16 @@ public class RenderManager {
         shader.createUniform("viewMatrix");
         shader.createUniform("ambientLight");
         shader.createMaterialUniform("material");
+        shader.createUniform("specularPower");
+        shader.createDirectionalLightUniform("directionalLight");
+        shader.createPointLightListUniform("pointLights",5);
+        shader.createSpotLightListUniform("spotLights",5);
     }
 
-    public void render(Entity entity, Camera camera){
+    public void render(Entity entity, Camera camera,
+                       DirectionalLight directionalLight,
+                       PointLight[] pointLights,
+                       SpotLight[] spotLights){
         clear();
         shader.bind();
         shader.setUniform("textureSampler", 0);
@@ -41,6 +51,16 @@ public class RenderManager {
         shader.setUniform("viewMatrix", Transformation.getViewMatrix(camera));
         shader.setUniform("material", entity.getModel().getMaterial());
         shader.setUniform("ambientLight", Constants.AMBIENT_LIGHT);
+        shader.setUniform("specularPower",Constants.SPECULAR_POWER);
+        shader.setUniform("directionalLight",directionalLight);
+        int numLights=spotLights!=null? spotLights.length : 0;
+        for(int i=0;i<numLights;i++){
+            shader.setUniform("spotLights",spotLights[i],i);
+        }
+        numLights=spotLights!=null? pointLights.length : 0;
+        for(int i=0;i<numLights;i++){
+            shader.setUniform("pointLights",pointLights[i],i);
+        }
 
 
         GL30.glBindVertexArray(entity.getModel().getId());
