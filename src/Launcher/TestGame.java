@@ -14,6 +14,9 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 import static Core.Utils.Constants.CAMERA_STEP;
@@ -26,7 +29,7 @@ public class TestGame implements ILogic {
     private final ObjectLoader loader;
     private final WindowManager window;
 
-    private Entity entity;
+    private List<Entity> entities;
     private Camera camera;
 
     Vector3f cameraInc;
@@ -49,9 +52,17 @@ public class TestGame implements ILogic {
         renderer.init();
 
         Model model=loader.loadOBJModel("/models/cube.obj");
-        model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")),9f);
-        entity = new Entity(model, new Vector3f(0,0,-5), new Vector3f(0,0,0), 1);
+        model.setTexture(new Texture(loader.loadTexture("textures/world.png")),1f);
 
+        entities=new ArrayList<>();
+        Random rand=new Random();
+        for(int i=0;i<200;i++){
+            float x=rand.nextFloat()*100-50;
+            float y=rand.nextFloat()*100-50;
+            float z=rand.nextFloat()*300;
+            entities.add(new Entity(model,new Vector3f(x,y,z),new Vector3f(rand.nextFloat()*180,rand.nextFloat()*180,z),1));
+        }
+        entities.add(new Entity(model,new Vector3f(0,0,-2f),new Vector3f(0,0,0),1));
         float lightIntensity=1.0f;
         //pointlight
         Vector3f lightPosition =new Vector3f(-0.5f,-0.5f,-3.2f);
@@ -95,15 +106,14 @@ public class TestGame implements ILogic {
         if(window.isKeyPressed(GLFW.GLFW_KEY_X))
             cameraInc.y = 1;
 
-        if(window.isKeyPressed(GLFW.GLFW_KEY_ENTER))
-            System.out.println(cameraInc);
 
-        float lightPos=spotLights[0].getPointLight().getPosition().z;
+        float lightPos=pointLights[0].getPosition().z;
         if(window.isKeyPressed(GLFW.GLFW_KEY_N)){
-            spotLights[0].getPointLight().getColor().z=lightPos+0.01f;
+            pointLights[0].getColor().z=lightPos+0.01f;
         }
         if(window.isKeyPressed(GLFW.GLFW_KEY_M)){
-            spotLights[0].getPointLight().getColor().z=lightPos-0.01f;
+            pointLights[0].getColor().z=lightPos-0.01f;
+            System.out.println(pointLights[0].getColor().z);
         }
     }
 
@@ -138,6 +148,9 @@ public class TestGame implements ILogic {
         double angRad=Math.toRadians(lightAngle);
         directionalLight.getDirection().x=(float)Math.sin(angRad);
         directionalLight.getDirection().y=(float)Math.cos(angRad);
+        for(Entity entity:entities){
+            renderer.processEntity(entity);
+        }
     }
 
     @Override
@@ -149,7 +162,7 @@ public class TestGame implements ILogic {
 
         renderer.clear();
 //        renderer.render(shaftModel);
-        renderer.render(entity, camera,directionalLight,pointLights,spotLights);
+        renderer.render( camera,directionalLight,pointLights,spotLights);
     }
 
     @Override

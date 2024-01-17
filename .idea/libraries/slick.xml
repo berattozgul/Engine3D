@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="joml" type="repository">
+  <library name="slick" type="repository">
     <properties maven-id="org.joml:joml:1.10.5" />
     <CLASSES>
       <root url="jar://$MAVEN_REPOSITORY$/org/joml/joml/1.10.5/joml-1.10.5.jar!/" />

@@ -127,12 +127,12 @@ public class ShaderManager {
 
     }
     public void setUniform(String uniformName, PointLight pointLight){
-            setUniform(uniformName+".color",pointLight.getColor());
-            setUniform(uniformName+".position",pointLight.getPosition());
-            setUniform(uniformName+".intensity",pointLight.getIntensity());
-            setUniform(uniformName+".constant",pointLight.getConstant());
-            setUniform(uniformName+".linear",pointLight.getLinear());
-            setUniform(uniformName+".exponent",pointLight.getExponent());
+        setUniform(uniformName+".color",pointLight.getColor());
+        setUniform(uniformName+".position",pointLight.getPosition());
+        setUniform(uniformName+".intensity",pointLight.getIntensity());
+        setUniform(uniformName+".constant",pointLight.getConstant());
+        setUniform(uniformName+".linear",pointLight.getLinear());
+        setUniform(uniformName+".exponent",pointLight.getExponent());
     }
     public void setUniform(String uniformName,PointLight[] pointLights){
         int numLights=pointLights!=null? pointLights.length : 0;

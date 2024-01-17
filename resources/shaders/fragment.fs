@@ -43,7 +43,7 @@ uniform Material material;
 uniform float specularPower;
 uniform DirectionalLight directionalLight;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
-uniform SpotLight spotLights[MAX_SPOT_LIGHTS]; // Fix variable name
+uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -52,8 +52,8 @@ vec4 specularC;
 void setupColors(Material material, vec2 textureCoord) {
   if (material.hasTexture == 1) {
     ambientC = texture(textureSampler, textureCoord);
-    diffuseC = texture(textureSampler, textureCoord);
-    specularC = texture(textureSampler, textureCoord);
+    diffuseC = ambientC;
+    specularC = ambientC;
   } else {
     ambientC = material.ambient;
     diffuseC = material.diffuse;
@@ -63,8 +63,8 @@ void setupColors(Material material, vec2 textureCoord) {
 
 vec4 calcLightColor(vec3 lightColor, float lightIntensity, vec3 position,
                  vec3 toLightDir, vec3 normal) {
-  vec4 diffuseColor = vec4(0.5, 0.5, 0.5, 0.0);
-  vec4 specColor = vec4(0.5, 0.5, 0.5, 0.0);
+  vec4 diffuseColor = vec4(0, 0, 0, 0);
+  vec4 specColor = vec4(0, 0, 0, 0);
 
   float diffuseFactor = max(dot(normal, toLightDir), 0.0);
   diffuseColor = diffuseC * vec4(lightColor, 1.0) * lightIntensity * diffuseFactor;
@@ -72,8 +72,8 @@ vec4 calcLightColor(vec3 lightColor, float lightIntensity, vec3 position,
   vec3 cameraDirection = normalize(-position);
   vec3 fromLightDir = -toLightDir;
   vec3 reflectedLight = normalize(reflect(fromLightDir, normal));
-  float specularFactor = pow(max(dot(cameraDirection, reflectedLight), 0.0), specularPower);
-  specularFactor *= material.reflectance;
+  float specularFactor = max(dot(cameraDirection, reflectedLight), 0.0);
+  specularFactor=pow(specularFactor,specularPower);
   specColor = specularC * lightIntensity * specularFactor * vec4(lightColor, 1.0);
 
   return (diffuseColor + specColor);
@@ -84,8 +84,8 @@ vec4 calcPointLight(PointLight light, vec3 position, vec3 normal) {
   vec3 toLightDir = normalize(lightDir);
   vec4 lightColor = calcLightColor(light.color, light.intensity, position, toLightDir, normal);
 
-  float distance = length(lightDir);
-  float attenuationInv = light.constant + light.linear * distance + light.exponent * distance * distance;
+  float distances = length(lightDir);
+  float attenuationInv = light.constant + light.linear * distances + light.exponent * distances * distances;
   return lightColor / attenuationInv;
 }
 
