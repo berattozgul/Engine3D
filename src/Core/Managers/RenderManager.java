@@ -19,16 +19,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * The RenderManager class manages rendering operations, including initializing shaders,
+ * binding models, preparing entities, rendering lights, and rendering entities.
+ */
 public class RenderManager {
     private final WindowManager window;
     private ShaderManager shader;
     private Map<Model, List<Entity>> entities = new HashMap<>();
-
+    /**
+     * Constructs a new RenderManager instance with a reference to the WindowManager.
+     */
     public RenderManager() {
         window = Main.getWindow();
     }
-
+    /**
+     * Initializes the RenderManager by creating and linking shaders, and setting up uniforms.
+     *
+     * @throws Exception If an error occurs during initialization.
+     */
     public void init() throws Exception {
         shader = new ShaderManager();
         shader.createVertexShader(Utils.loadResource("/shaders/vertex.vs"));
@@ -45,7 +54,11 @@ public class RenderManager {
         shader.createPointLightListUniform("pointLights", 5);
         shader.createSpotLightListUniform("spotLights", 5);
     }
-
+    /**
+     * Binds the specified model, enabling vertex attribute arrays and setting material and texture.
+     *
+     * @param model The Model to bind.
+     */
     public void bind(Model model) {
         GL30.glBindVertexArray(model.getId());
         GL20.glEnableVertexAttribArray(0);
@@ -57,21 +70,35 @@ public class RenderManager {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getId());
 
     }
-
+    /**
+     * Unbinds the currently bound model, disabling vertex attribute arrays.
+     */
     public void unbind() {
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
         GL20.glDisableVertexAttribArray(2);
         GL30.glBindVertexArray(0);
     }
-
+    /**
+     * Prepares an entity for rendering by setting transformation and view matrices.
+     *
+     * @param entity The Entity to prepare.
+     * @param camera The Camera used for rendering.
+     */
     public void prepare(Entity entity, Camera camera) {
         shader.setUniform("textureSampler", 0);
         shader.setUniform("transformationMatrix", Transformation.createTransformationMatrix(entity));
         shader.setUniform("viewMatrix", Transformation.getViewMatrix(camera));
 
     }
-
+    /**
+     * Renders lights, including ambient light, point lights, spot lights, and directional light.
+     *
+     * @param camera           The Camera used for rendering.
+     * @param pointLights      An array of PointLight objects.
+     * @param spotLights       An array of SpotLight objects.
+     * @param directionalLight The DirectionalLight object.
+     */
     public void renderLights(Camera camera, PointLight[] pointLights,
                              SpotLight[] spotLights,
                              DirectionalLight directionalLight) {
@@ -89,6 +116,14 @@ public class RenderManager {
 
     }
 
+    /**
+     * Renders entities with specified lights and camera.
+     *
+     * @param camera           The Camera used for rendering.
+     * @param directionalLight The DirectionalLight object.
+     * @param pointLights      An array of PointLight objects.
+     * @param spotLights       An array of SpotLight objects.
+     */
     public void render( Camera camera,
                        DirectionalLight directionalLight,
                        PointLight[] pointLights,
@@ -110,6 +145,11 @@ public class RenderManager {
         entities.clear();
         shader.unbind();
     }
+    /**
+     * Processes an entity for rendering by adding it to the list of entities for its model.
+     *
+     * @param entity The Entity to process.
+     */
     public void processEntity(Entity entity){
         List<Entity>entityList=entities.get(entity.getModel());
         if(entityList!=null){
@@ -120,11 +160,15 @@ public class RenderManager {
             entities.put(entity.getModel(),newEntityList);
         }
     }
-
+    /**
+     * Clears the color and depth buffers for rendering.
+     */
     public void clear() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
-
+    /**
+     * Cleans up resources, including shader cleanup.
+     */
     public void cleanup() {
         shader.cleanup();
     }

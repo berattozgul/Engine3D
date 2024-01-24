@@ -12,13 +12,20 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * The ShaderManager class is responsible for managing shaders in OpenGL, including
+ * creating, compiling, and linking shaders, setting uniform variables, and cleaning up resources.
+ */
 public class ShaderManager {
 
     private final int programID;
     private int vertexShaderID, fragmentShaderID;
     private final Map<String, Integer> uniforms;
-
+    /**
+     * Constructs a new ShaderManager instance, creating an OpenGL program and initializing data structures.
+     *
+     * @throws Exception If an error occurs during shader program creation.
+     */
     public ShaderManager() throws Exception {
         programID = GL20.glCreateProgram();
         if (programID == 0)
@@ -33,7 +40,12 @@ public class ShaderManager {
             throw new Exception("Could not find uniform " + uniformName);
         uniforms.put(uniformName, uniformLocation);
     }
-
+    /**
+     * Creates a set of material-related uniform variables based on the given uniform name.
+     *
+     * @param uniformName The base name for the material-related uniforms.
+     * @throws Exception If any of the material-related uniforms cannot be created.
+     */
     public void createMaterialUniform(String uniformName) throws Exception {
         createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
@@ -60,6 +72,12 @@ public class ShaderManager {
             GL20.glUniform4f(uniforms.get(uniformName), value.x, value.y, value.z, value.w);
         }
     }
+    /**
+     * Creates directional light-related uniform variables based on the given uniform name.
+     *
+     * @param uniformName The base name for the directional light-related uniforms.
+     * @throws Exception If any of the directional light-related uniforms cannot be created.
+     */
     public void createDirectionalLightUniform(String uniformName)throws Exception{
         createUniform(uniformName+".color");;
         createUniform(uniformName+".direction");;
@@ -117,6 +135,12 @@ public class ShaderManager {
         setUniform(uniformName+".coneDir",spotLight.getConeDirection());
         setUniform(uniformName+".cutOff",spotLight.getCutOff());
     }
+    /**
+     * Creates a vertex shader with the provided shader code.
+     *
+     * @param shaderCode The source code for the vertex shader.
+     * @throws Exception If an error occurs during vertex shader creation.
+     */
     public void createVertexShader(String shaderCode) throws Exception {
         vertexShaderID = createShader(shaderCode, GL20.GL_VERTEX_SHADER);
     }
@@ -154,11 +178,23 @@ public class ShaderManager {
     public void setUniform(String uniformName, PointLight pointLight, int pos) {
         setUniform(uniformName+"["+pos+"]",pointLight);
     }
-
+    /**
+     * Creates a fragment shader with the provided shader code.
+     *
+     * @param shaderCode The source code for the fragment shader.
+     * @throws Exception If an error occurs during fragment shader creation.
+     */
     public void createFragmentShader(String shaderCode) throws Exception {
         fragmentShaderID = createShader(shaderCode, GL20.GL_FRAGMENT_SHADER);
     }
-
+    /**
+     * Creates a shader of the specified type with the provided shader code.
+     *
+     * @param shaderCode The source code for the shader.
+     * @param shaderType The type of the shader (GL_VERTEX_SHADER or GL_FRAGMENT_SHADER).
+     * @return The ID of the created shader.
+     * @throws Exception If an error occurs during shader creation.
+     */
     public int createShader(String shaderCode, int shaderType) throws Exception {
         int shaderID = GL20.glCreateShader(shaderType);
         if (shaderID == 0)
@@ -176,7 +212,11 @@ public class ShaderManager {
         return shaderID;
 
     }
-
+    /**
+     * Links the shader program, detaches shaders, and validates the program.
+     *
+     * @throws Exception If an error occurs during shader program linking or validation.
+     */
     public void link() throws Exception {
         GL20.glLinkProgram(programID);
 
@@ -196,15 +236,21 @@ public class ShaderManager {
 
 
     }
-
+    /**
+     * Binds the shader program for use.
+     */
     public void bind() {
         GL20.glUseProgram(programID);
     }
-
+    /**
+     * Unbinds the currently bound shader program.
+     */
     public void unbind() {
         GL20.glUseProgram(0);
     }
-
+    /**
+     * Cleans up resources by unbinding the shader program and deleting it.
+     */
     public void cleanup() {
         unbind();
         if (programID != 0)

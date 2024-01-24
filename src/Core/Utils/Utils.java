@@ -15,26 +15,51 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static java.io.FileDescriptor.in;
-
+/**
+ * The Utils class provides utility methods for handling common tasks.
+ */
 public class Utils {
+    /**
+     * Converts a float array into a FloatBuffer.
+     *
+     * @param data The float array to be converted.
+     * @return The resulting FloatBuffer.
+     */
     public static FloatBuffer storeDataInFloatBuffer(float[] data) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
         buffer.put(data).flip();
         return buffer;
     }
-
+    /**
+     * Converts an int array into an IntBuffer.
+     *
+     * @param data The int array to be converted.
+     * @return The resulting IntBuffer.
+     */
     public static IntBuffer storeDataInIntBuffer(int[] data) {
         IntBuffer buffer = MemoryUtil.memAllocInt(data.length);
         buffer.put(data).flip();
         return buffer;
     }
-
+    /**
+     * Concatenates two float arrays using System.arraycopy.
+     *
+     * @param vertices The first float array.
+     * @param vertices1 The second float array to concatenate.
+     * @return The concatenated float array.
+     */
     public static float[] concatWithArrayCopy(float[] vertices, float[] vertices1) {
         float[] result = Arrays.copyOf(vertices, vertices.length + vertices1.length);
         System.arraycopy(vertices1, 0, result, vertices.length, vertices1.length);
         return result;
     }
-
+    /**
+     * Loads the content of a resource file into a String.
+     *
+     * @param filename The path to the resource file.
+     * @return The content of the resource file as a String.
+     * @throws Exception If an error occurs during the loading process.
+     */
     public static String loadResource(String filename) throws Exception {
         String result;
         try (
@@ -44,7 +69,12 @@ public class Utils {
         }
         return result;
     }
-
+    /**
+     * Reads all lines from a resource file and returns them as a list of strings.
+     *
+     * @param filename The path to the resource file.
+     * @return A list of strings representing the lines in the resource file.
+     */
     public static List<String> readAllLines(String filename) {
         List<String> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Class.forName(Utils.class.getName())

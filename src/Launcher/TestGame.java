@@ -21,7 +21,11 @@ import java.util.Vector;
 
 import static Core.Utils.Constants.CAMERA_STEP;
 import static Core.Utils.Constants.MOUSE_SENSITIVITY;
-
+/**
+ * The TestGame class implements the game logic for the 3D engine.
+ * It initializes the renderer, window, loader, camera, lights, and entities,
+ * handles user input, updates the game state, and renders the scene.
+ */
 public class TestGame implements ILogic {
 
 
@@ -37,7 +41,10 @@ public class TestGame implements ILogic {
     private DirectionalLight directionalLight;
     private PointLight[] pointLights;
     private SpotLight[] spotLights;
-
+    /**
+     * Constructs a TestGame object.
+     * Initializes the renderer, window, loader, camera, and lights.
+     */
     public TestGame(){
         renderer = new RenderManager();
         window = Main.getWindow();
@@ -46,23 +53,40 @@ public class TestGame implements ILogic {
         cameraInc = new Vector3f(0,0,0);
         lightAngle=-90;
     }
-
+    /**
+     * Initializes the game, including renderer, loader, camera, lights, and entities.
+     *
+     * @throws Exception If an error occurs during initialization.
+     */
     @Override
     public void init() throws Exception {
         renderer.init();
 
         Model model=loader.loadOBJModel("/models/cube.obj");
-        model.setTexture(new Texture(loader.loadTexture("textures/world.png")),1f);
+        model.setTexture(new Texture(loader.loadTexture("textures/blue.png")),1f);
 
         entities=new ArrayList<>();
         Random rand=new Random();
-        for(int i=0;i<200;i++){
-            float x=rand.nextFloat()*100-50;
-            float y=rand.nextFloat()*100-50;
-            float z=rand.nextFloat()*300;
-            entities.add(new Entity(model,new Vector3f(x,y,z),new Vector3f(rand.nextFloat()*180,rand.nextFloat()*180,z),1));
+        for(int i=0;i<200;i++) {
+            float x = rand.nextFloat() * 100 - 50;
+            float y = rand.nextFloat() * 100 - 50;
+            float z = rand.nextFloat() * 300;
+            entities.add(new Entity(model, new Vector3f(x, y, z), new Vector3f(rand.nextFloat() * 180, rand.nextFloat() * 180, z), 2));
         }
-        entities.add(new Entity(model,new Vector3f(0,0,-2f),new Vector3f(0,0,0),1));
+        entities.add(new Entity(model,new Vector3f(0,0,-5f),new Vector3f(0,0,0),2));
+
+
+        model=loader.loadOBJModel("/models/bunny.obj");
+        model.setTexture(new Texture(loader.loadTexture("textures/world.png")),5);
+        entities.add(new Entity(model,new Vector3f(0,-3,-5),new Vector3f(0,0,0),2));
+
+
+        model=loader.loadOBJModel("/models/alligator.obj");
+        model.setTexture(new Texture(loader.loadTexture("textures/grassblock.png")),1);
+        entities.add(new Entity(model,new Vector3f(0,-10,-5),new Vector3f(0,0,0),2));
+
+
+
         float lightIntensity=1.0f;
         //pointlight
         Vector3f lightPosition =new Vector3f(-0.5f,-0.5f,-3.2f);
@@ -86,7 +110,9 @@ public class TestGame implements ILogic {
         pointLights=new PointLight[]{pointLight};
         spotLights=new SpotLight[]{spotLight,spotLight1};
     }
-
+    /**
+     * Handles user input for camera movement and light adjustments.
+     */
     @Override
     public void input() {
         cameraInc.set(0,0,0);
@@ -116,18 +142,22 @@ public class TestGame implements ILogic {
             System.out.println(pointLights[0].getColor().z);
         }
     }
-
+    /**
+     * Updates the game state, including camera movement, entity rotation, and light adjustments.
+     *
+     * @param mouseInput The mouse input for handling camera rotation.
+     */
     @Override
     public void update(MouseInput mouseInput) {
         camera.movePosition(cameraInc.x * CAMERA_STEP, cameraInc.y * CAMERA_STEP, cameraInc.z * CAMERA_STEP);
-        //entity.incRotation(0.0f, 0.5f, 0.0f);
+        entities.get(0).incRotation(0.0f, 0.5f, 0.0f);
 
         if(mouseInput.isRightButtonPressed()) {
             Vector2f rotVec = mouseInput.getDisplVec();
             camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
         }
 
-        lightAngle+=0.5f;
+        lightAngle+=1.5f;
         if(lightAngle>90){
             directionalLight.setIntensity(0);
             if(lightAngle>=360){
@@ -152,7 +182,9 @@ public class TestGame implements ILogic {
             renderer.processEntity(entity);
         }
     }
-
+    /**
+     * Renders the scene using the renderer.
+     */
     @Override
     public void render() {
         if(window.isResize()) {
@@ -164,7 +196,9 @@ public class TestGame implements ILogic {
 //        renderer.render(shaftModel);
         renderer.render( camera,directionalLight,pointLights,spotLights);
     }
-
+    /**
+     * Cleans up resources used by the renderer and loader.
+     */
     @Override
     public void cleanup() {
         renderer.cleanup();

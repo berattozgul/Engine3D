@@ -20,12 +20,20 @@ import java.nio.IntBuffer;
 import java.util.List;
 import java.util.ArrayList;
 
-
+/**
+ * The ObjectLoader class is responsible for loading 3D models in the Wavefront OBJ format and managing associated resources.
+ */
 public class ObjectLoader {
 
     private List<Integer> vaos = new ArrayList<>();
     private List<Integer> vbos = new ArrayList<>();
     private List<Integer> textures = new ArrayList<>();
+    /**
+     * Loads a 3D model from an OBJ file.
+     *
+     * @param filename The path to the OBJ file.
+     * @return A Model object representing the loaded 3D model.
+     */
     public Model loadOBJModel(String filename){
         List<String> lines=Utils.readAllLines(filename);
 
@@ -88,7 +96,18 @@ public class ObjectLoader {
 
         return loadModel(verticesArr,textCoordArr,normalArr,indicesArr);
     }
-
+    /**
+     * Processes a vertex in the OBJ file and updates the corresponding lists.
+     *
+     * @param pos         The position index of the vertex.
+     * @param textCoord   The texture coordinate index of the vertex.
+     * @param normal      The normal vector index of the vertex.
+     * @param textCoordList The list of texture coordinates.
+     * @param normalList    The list of normal vectors.
+     * @param indicesList   The list of vertex indices.
+     * @param textCoordArr  The array to store texture coordinates.
+     * @param normalArr     The array to store normal vectors.
+     */
     public static void processVertex(int pos,int textCoord,int normal
             ,List<Vector2f> textCoordList,List<Vector3f>normalList,
                                      List<Integer>indicesList,
@@ -106,6 +125,12 @@ public class ObjectLoader {
             normalArr[pos*3+2]=normalVec.z;
         }
     }
+    /**
+     * Processes a face in the OBJ file and updates the list of faces.
+     *
+     * @param token The face token from the OBJ file.
+     * @param faces The list of faces.
+     */
     private static void processFace(String token, List<Vector3i>faces){
         String[] lineToken=token.split("/");
         int length= lineToken.length;
@@ -122,7 +147,15 @@ public class ObjectLoader {
         Vector3i facesVec=new Vector3i(pos,coords,normal);
         faces.add(facesVec);
     }
-
+    /**
+     * Loads a 3D model with the provided vertex, texture coordinate, normal, and index data.
+     *
+     * @param vertices      The array of vertex coordinates.
+     * @param textureCoords The array of texture coordinates.
+     * @param normals       The array of normal vectors.
+     * @param indices       The array of vertex indices.
+     * @return A Model object representing the loaded 3D model.
+     */
     public Model loadModel(float[] vertices, float[] textureCoords,
                            float[]normals,int[] indices) {
         int id = createVAO();
@@ -133,7 +166,13 @@ public class ObjectLoader {
         unbind();
         return new Model(id, indices.length);
     }
-
+    /**
+     * Loads a texture from an image file.
+     *
+     * @param filename The path to the image file.
+     * @return The OpenGL texture ID for the loaded texture.
+     * @throws Exception If an error occurs during texture loading.
+     */
     public int loadTexture(String filename) throws Exception {
         int width, height;
         ByteBuffer buffer;
@@ -159,14 +198,24 @@ public class ObjectLoader {
         STBImage.stbi_image_free(buffer);
         return id;
     }
-
+    /**
+     * Creates a new Vertex Array Object (VAO) in OpenGL.
+     *
+     * @return The OpenGL ID of the created VAO.
+     */
     private int createVAO() {
         int id = GL30.glGenVertexArrays();
         vaos.add(id);
         GL30.glBindVertexArray(id);
         return id;
     }
-
+    /**
+     * Stores vertex data in a Vertex Buffer Object (VBO) for a specific attribute.
+     *
+     * @param attribNo    The attribute number for the VBO.
+     * @param vertexCount The number of components per vertex attribute.
+     * @param data        The array of vertex data.
+     */
     private void storeDataInAttribList(int attribNo, int vertexCount, float[] data){
         int vbo = GL15.glGenBuffers();
         vbos.add(vbo);
@@ -176,7 +225,11 @@ public class ObjectLoader {
         GL20.glVertexAttribPointer(attribNo, vertexCount, GL11.GL_FLOAT, false, 0, 0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
-
+    /**
+     * Stores index data in an Element Array Buffer (EBO).
+     *
+     * @param indices The array of vertex indices.
+     */
     private void storeIndicesBuffer(int[] indices) {
         int vbo = GL15.glGenBuffers();
         vbos.add(vbo);
@@ -184,11 +237,15 @@ public class ObjectLoader {
         IntBuffer buffer = Utils.storeDataInIntBuffer(indices);
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
     }
-
+    /**
+     * Unbinds the current VAO in OpenGL.
+     */
     private void unbind() {
         GL30.glBindVertexArray(0);
     }
-
+    /**
+     * Cleans up resources by deleting VAOs, VBOs, and textures.
+     */
     public void cleanup(){
         for(int vao : vaos)
             GL30.glDeleteVertexArrays(vao);
